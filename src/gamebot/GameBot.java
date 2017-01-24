@@ -5,6 +5,8 @@
  */
 package gamebot;
 
+import java.util.Timer;
+
 /**
  *
  * @author Jordan
@@ -15,12 +17,12 @@ public class GameBot {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Veuillez entrez le token et le nom du chan de jeu en argument");
+        if (args.length < 1) {
+            System.out.println("Veuillez entrez le token en argument");
         } else {
-            Bot bot = new Bot(args[0], args[1]);
-            bot.run();
+            Timer t = new Timer();
+            t.scheduleAtFixedRate(new Bot(args[0]), 0, 1000);
         }
     }
-    
+
 }
