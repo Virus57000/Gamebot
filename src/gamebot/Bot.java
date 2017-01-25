@@ -21,6 +21,7 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.Event;
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.exceptions.GuildUnavailableException;
 
 /**
  *
@@ -32,6 +33,7 @@ public class Bot extends TimerTask implements EventListener {
     boolean stop;
     HashMap<Guild, VoiceChannel> GuildChanJeux;
     ArrayList<VoiceChannel> chansDeJeu;
+    User botOwner;
 
     public Bot(String token) {
         stop = false;
@@ -43,6 +45,7 @@ public class Bot extends TimerTask implements EventListener {
         GuildChanJeux = new HashMap<>();
         chansDeJeu = new ArrayList<>();
         jda.addEventListener(this);
+        botOwner = jda.getUserById("170592618055598080");
     }
 
     @Override
@@ -54,13 +57,22 @@ public class Bot extends TimerTask implements EventListener {
     public void verifieChanJeux() {
         for (Guild guild : GuildChanJeux.keySet()) {
             VoiceChannel chanJeux = GuildChanJeux.get(guild);
-            if (Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()), Permission.MANAGE_CHANNEL) && Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()),  Permission.VOICE_MOVE_OTHERS)) {
+            if (Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()), Permission.MANAGE_CHANNEL) && Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()), Permission.VOICE_MOVE_OTHERS)) {
                 for (User member : chanJeux.getUsers()) {
                     if (member.getCurrentGame() != null) {
-                        if (Helper.getVoiceChannelByName(guild, member.getCurrentGame().getName()) == null) {
-                            chansDeJeu.add((VoiceChannel) guild.createVoiceChannel(member.getCurrentGame().getName()).getChannel());
+                        String game = member.getCurrentGame().getName();
+                        if (Helper.getVoiceChannelByName(guild, game) == null) {
+                            try {
+                                chansDeJeu.add((VoiceChannel) guild.createVoiceChannel(game).getChannel());
+                            } catch (GuildUnavailableException e) {
+                                sendBotOwner(e.toString());
+                            }
                         }
-                        guild.getManager().moveVoiceUser(member, Helper.getVoiceChannelByName(guild, member.getCurrentGame().getName()));
+                        try {
+                            guild.getManager().moveVoiceUser(member, Helper.getVoiceChannelByName(guild, game));
+                        } catch (Exception e) {
+                            sendBotOwner(Helper.getStackTrace(e));
+                        }
                     }
                 }
             }
@@ -71,7 +83,7 @@ public class Bot extends TimerTask implements EventListener {
         for (Iterator<VoiceChannel> it = chansDeJeu.iterator(); it.hasNext();) {
             VoiceChannel chan = it.next();
             chan.getManager().update();
-            if (chan.getUsers().isEmpty() && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()), Permission.MANAGE_CHANNEL) && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()),  Permission.VOICE_MOVE_OTHERS)) {
+            if (chan.getUsers().isEmpty() && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()), Permission.MANAGE_CHANNEL) && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()), Permission.VOICE_MOVE_OTHERS)) {
                 chan.getManager().delete();
                 it.remove();
             }
@@ -85,11 +97,20 @@ public class Bot extends TimerTask implements EventListener {
             String[] m = p.getMessage().getRawContent().split(" = ");
             Guild guild = jda.getGuildById(m[0]);
             if (m.length == 2 && guild != null && jda.getVoiceChannelById(m[1]) != null) {
-                if (p.getAuthor().getId().equals(guild.getOwnerId()) || p.getAuthor().getId().equals("170592618055598080")) {
+                if (p.getAuthor().getId().equals(guild.getOwnerId()) || p.getAuthor().equals(botOwner)) {
                     GuildChanJeux.put(guild, jda.getVoiceChannelById(m[1]));
                     p.getChannel().sendMessage("Le chan de jeu de " + guild.getName() + " est maintenant " + GuildChanJeux.get(guild).getName());
                 }
             }
         }
     }
+
+    private void sendBotOwner(String s) {
+        String message = s;
+        if(message.length() > 1900){
+           message = message.substring(0, 1850) + "\n etc.";
+        }
+        botOwner.getPrivateChannel().sendMessage(message);
+    }
+
 }

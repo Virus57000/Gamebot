@@ -5,8 +5,8 @@
  */
 package gamebot;
 
-import java.util.List;
-import net.dv8tion.jda.JDA;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
@@ -21,7 +21,7 @@ public class Helper {
 
     static VoiceChannel getVoiceChannelByName(Guild guild, String name) {
         for (VoiceChannel chan : guild.getVoiceChannels()) {
-            if(chan.getName().equals(name)){
+            if (chan.getName().equals(name)) {
                 return chan;
             }
         }
@@ -31,12 +31,19 @@ public class Helper {
     static boolean hasPermissions(Guild guild, User user, Permission perm) {
         for (Role role : guild.getRolesForUser(user)) {
             for (Permission permission : role.getPermissions()) {
-                if(permission.equals(perm)){
+                if (permission.equals(perm)) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public static String getStackTrace(final Throwable throwable) {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw, true);
+        throwable.printStackTrace(pw);
+        return sw.getBuffer().toString();
     }
 
 }
