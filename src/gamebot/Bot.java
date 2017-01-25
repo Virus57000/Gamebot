@@ -30,13 +30,11 @@ import net.dv8tion.jda.exceptions.GuildUnavailableException;
 public class Bot extends TimerTask implements EventListener {
 
     JDA jda;
-    boolean stop;
     HashMap<Guild, VoiceChannel> GuildChanJeux;
     ArrayList<VoiceChannel> chansDeJeu;
     User botOwner;
 
     public Bot(String token) {
-        stop = false;
         try {
             jda = new JDABuilder().setBotToken(token).setBulkDeleteSplittingEnabled(false).buildBlocking();
         } catch (IllegalArgumentException | LoginException | InterruptedException ex) {
@@ -69,7 +67,10 @@ public class Bot extends TimerTask implements EventListener {
                             }
                         }
                         try {
-                            guild.getManager().moveVoiceUser(member, Helper.getVoiceChannelByName(guild, game));
+                            VoiceChannel chan = Helper.getVoiceChannelByName(guild, game);
+                            if (chan.checkPermission(member, Permission.VOICE_CONNECT)) {
+                                guild.getManager().moveVoiceUser(member, chan);
+                            }
                         } catch (Exception e) {
                             sendBotOwner(Helper.getStackTrace(e));
                         }
@@ -107,8 +108,8 @@ public class Bot extends TimerTask implements EventListener {
 
     private void sendBotOwner(String s) {
         String message = s;
-        if(message.length() > 1900){
-           message = message.substring(0, 1850) + "\n etc.";
+        if (message.length() > 1900) {
+            message = message.substring(0, 1850) + "\n etc.";
         }
         botOwner.getPrivateChannel().sendMessage(message);
     }
