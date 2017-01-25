@@ -57,10 +57,10 @@ public class Bot extends TimerTask implements EventListener {
             if (Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()), Permission.MANAGE_CHANNEL) && Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()),  Permission.VOICE_MOVE_OTHERS)) {
                 for (User member : chanJeux.getUsers()) {
                     if (member.getCurrentGame() != null) {
-                        if (Helper.getVoiceChannelByName(jda, guild, member.getCurrentGame().getName()) == null) {
+                        if (Helper.getVoiceChannelByName(guild, member.getCurrentGame().getName()) == null) {
                             chansDeJeu.add((VoiceChannel) guild.createVoiceChannel(member.getCurrentGame().getName()).getChannel());
                         }
-                        guild.getManager().moveVoiceUser(member, Helper.getVoiceChannelByName(jda, guild, member.getCurrentGame().getName()));
+                        guild.getManager().moveVoiceUser(member, Helper.getVoiceChannelByName(guild, member.getCurrentGame().getName()));
                     }
                 }
             }

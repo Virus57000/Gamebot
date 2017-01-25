@@ -19,9 +19,9 @@ import net.dv8tion.jda.entities.VoiceChannel;
  */
 public class Helper {
 
-    static VoiceChannel getVoiceChannelByName(JDA jda, Guild guild, String name) {
-        for (VoiceChannel chan : jda.getVoiceChannelByName(name)) {
-            if (chan.getGuild().equals(guild)) {
+    static VoiceChannel getVoiceChannelByName(Guild guild, String name) {
+        for (VoiceChannel chan : guild.getVoiceChannels()) {
+            if(chan.getName().equals(name)){
                 return chan;
             }
         }
