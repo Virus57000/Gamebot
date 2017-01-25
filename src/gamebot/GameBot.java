@@ -21,7 +21,8 @@ public class GameBot {
             System.out.println("Veuillez entrez le token en argument");
         } else {
             Timer t = new Timer();
-            t.scheduleAtFixedRate(new Bot(args[0]), 0, 1000);
+            Bot b = new Bot(args[0]);
+            t.scheduleAtFixedRate(b, 0, 1000);
         }
     }
 

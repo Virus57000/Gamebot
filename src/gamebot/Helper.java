@@ -5,7 +5,12 @@
  */
 package gamebot;
 
+import java.util.List;
+import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 
 /**
@@ -13,22 +18,25 @@ import net.dv8tion.jda.entities.VoiceChannel;
  * @author Jordan
  */
 public class Helper {
-    
-    public static VoiceChannel getVoiceChannelByID(Guild guild, String id) {
-        for (VoiceChannel chan : guild.getVoiceChannels()) {
-            if (chan.getId().equals(id)) {
+
+    static VoiceChannel getVoiceChannelByName(JDA jda, Guild guild, String name) {
+        for (VoiceChannel chan : jda.getVoiceChannelByName(name)) {
+            if (chan.getGuild().equals(guild)) {
                 return chan;
             }
         }
         return null;
     }
 
-    public static VoiceChannel getVoiceChannelByName(Guild guild, String name) {
-        for (VoiceChannel chan : guild.getVoiceChannels()) {
-            if (chan.getName().equalsIgnoreCase(name)) {
-                return chan;
+    static boolean hasPermissions(Guild guild, User user) {
+        for (Role role : guild.getRolesForUser(user)) {
+            for (Permission permission : role.getPermissions()) {
+                if(permission.equals(Permission.MANAGE_CHANNEL)){
+                    return true;
+                }
             }
         }
-        return null;
+        return false;
     }
+
 }
