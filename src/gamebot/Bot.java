@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDABuilder;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
@@ -53,7 +54,7 @@ public class Bot extends TimerTask implements EventListener {
     public void verifieChanJeux() {
         for (Guild guild : GuildChanJeux.keySet()) {
             VoiceChannel chanJeux = GuildChanJeux.get(guild);
-            if (Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()))) {
+            if (Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()), Permission.MANAGE_CHANNEL) && Helper.hasPermissions(guild, jda.getUserById(jda.getSelfInfo().getId()),  Permission.VOICE_MOVE_OTHERS)) {
                 for (User member : chanJeux.getUsers()) {
                     if (member.getCurrentGame() != null) {
                         if (Helper.getVoiceChannelByName(jda, guild, member.getCurrentGame().getName()) == null) {
@@ -70,7 +71,7 @@ public class Bot extends TimerTask implements EventListener {
         for (Iterator<VoiceChannel> it = chansDeJeu.iterator(); it.hasNext();) {
             VoiceChannel chan = it.next();
             chan.getManager().update();
-            if (chan.getUsers().isEmpty() && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()))) {
+            if (chan.getUsers().isEmpty() && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()), Permission.MANAGE_CHANNEL) && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()),  Permission.VOICE_MOVE_OTHERS)) {
                 chan.getManager().delete();
                 it.remove();
             }

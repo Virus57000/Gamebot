@@ -28,10 +28,10 @@ public class Helper {
         return null;
     }
 
-    static boolean hasPermissions(Guild guild, User user) {
+    static boolean hasPermissions(Guild guild, User user, Permission perm) {
         for (Role role : guild.getRolesForUser(user)) {
             for (Permission permission : role.getPermissions()) {
-                if(permission.equals(Permission.MANAGE_CHANNEL)){
+                if(permission.equals(perm)){
                     return true;
                 }
             }
