@@ -23,7 +23,7 @@ import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
 
 /**
  *
- * @author Jordan
+ * @author Noukkis
  */
 public class Bot extends TimerTask implements EventListener {
 

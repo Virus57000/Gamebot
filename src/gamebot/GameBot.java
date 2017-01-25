@@ -9,7 +9,7 @@ import java.util.Timer;
 
 /**
  *
- * @author Jordan
+ * @author Noukkis
  */
 public class GameBot {
 

@@ -15,7 +15,7 @@ import net.dv8tion.jda.entities.VoiceChannel;
 
 /**
  *
- * @author Jordan
+ * @author Noukkis
  */
 public class Helper {
 
