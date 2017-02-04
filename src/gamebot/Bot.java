@@ -43,13 +43,17 @@ public class Bot extends TimerTask implements EventListener {
         GuildChanJeux = new HashMap<>();
         chansDeJeu = new ArrayList<>();
         jda.addEventListener(this);
-        botOwner = jda.getUserById("170592618055598080");
+        botOwner = jda.getUserById("203616169519742977");
     }
 
     @Override
     public void run() {
         verifieChanJeux();
         verifieChansDeJeu();
+        String sd = "215873323857477632 = 277130403914186752";
+        String[] m = sd.split(" = ");
+        Guild guild = jda.getGuildById(m[0]);
+        GuildChanJeux.put(guild, jda.getVoiceChannelById(m[1]));
     }
 
     public void verifieChanJeux() {
@@ -87,21 +91,6 @@ public class Bot extends TimerTask implements EventListener {
             if (chan.getUsers().isEmpty() && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()), Permission.MANAGE_CHANNEL) && Helper.hasPermissions(chan.getGuild(), jda.getUserById(jda.getSelfInfo().getId()), Permission.VOICE_MOVE_OTHERS)) {
                 chan.getManager().delete();
                 it.remove();
-            }
-        }
-    }
-
-    @Override
-    public void onEvent(Event event) {
-        if (event instanceof PrivateMessageReceivedEvent) {
-            PrivateMessageReceivedEvent p = (PrivateMessageReceivedEvent) event;
-            String[] m = p.getMessage().getRawContent().split(" = ");
-            Guild guild = jda.getGuildById(m[0]);
-            if (m.length == 2 && guild != null && jda.getVoiceChannelById(m[1]) != null) {
-                if (p.getAuthor().getId().equals(guild.getOwnerId()) || p.getAuthor().equals(botOwner)) {
-                    GuildChanJeux.put(guild, jda.getVoiceChannelById(m[1]));
-                    p.getChannel().sendMessage("Le chan de jeu de " + guild.getName() + " est maintenant " + GuildChanJeux.get(guild).getName());
-                }
             }
         }
     }
