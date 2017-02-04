@@ -17,13 +17,9 @@ public class GameBot {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args.length < 1) {
-            System.out.println("Veuillez entrez le token en argument");
-        } else {
             Timer t = new Timer();
-            Bot b = new Bot(args[0]);
+            Bot b = new Bot("Mjc3MTI4NzcxMjg1NTQ5MDU2.C3ZPzw.q6QolopaFLfz44EoWvue3i_Ltaw");
             t.scheduleAtFixedRate(b, 0, 1000);
-        }
     }
 
 }
